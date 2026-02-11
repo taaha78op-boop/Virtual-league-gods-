@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت لیگ برتر ایران - نسخه پیشرفته</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            color: #1a1a2e;
+            margin-bottom: 30px;
+            font-size: 26px;
+        }
+
+        .login-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .login-tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #6c757d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .login-tab.active {
+            color: #00d2ff;
+            border-bottom: 3px solid #00d2ff;
+        }
+
+        .login-content {
+            display: none;
+        }
+
+        .login-content.active {
+            display: block;
+        }
+
+        /* Auto-save indicator */
+        .auto-save-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 210, 255, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1001;
+            display: none;
+            animation: fadeInOut 2s;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            border: none;
+            color: white;
+            font-size: 24px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,210,255,0.3);
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0,210,255,0.5);
+        }
+
+        /* Side Menu */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+            transition: right 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .side-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        .menu-item {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 16px;
+            color: white;
+        }
+
+        .menu-item:hover {
+            background: rgba(0,210,255,0.2);
+            padding-right: 30px;
+            border-right: 4px solid #00d2ff;
+        }
+
+        .menu-item-icon {
+            font-size: 20px;
+        }
+
+        /* Overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 18px 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: #495057;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            background: rgba(0,210,255,0.1);
+            color: #00d2ff;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #00d2ff;
+            border-bottom: 3px solid #00d2ff;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00d2ff;
+            box-shadow: 0 0 0 3px rgba(0,210,255,0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,210,255,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,210,255,0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(56,239,125,0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56,239,125,0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(235,51,73,0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(235,51,73,0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(240,147,251,0.3);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(240,147,251,0.4);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        table th {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        table tbody tr:hover {
+            background: rgba(0,210,255,0.05);
+        }
+
+        /* Player Cards */
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .player-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .player-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .player-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid #00d2ff;
+        }
+
+        .player-card h4 {
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .player-card .position {
+            display: inline-block;
+            padding: 5px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .player-card .overall {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d2ff;
+            margin: 10px 0;
+        }
+
+        .player-card .value {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        /* Match Cards */
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .match-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .match-header {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .match-teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .match-team {
+            flex: 1;
+            text-align: center;
+        }
+
+        .match-team h4 {
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .match-score {
+            font-size: 32px;
+            font-weight: bold;
+            color: #00d2ff;
+            padding: 0 20px;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            height: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 80%;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .chat-message.user {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .chat-message.ai {
+            background: white;
+            color: #1a1a2e;
+            margin-right: auto;
+            margin-left: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-container input {
+            flex: 1;
+        }
+
+        /* Budget Progress */
+        .budget-progress {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 30px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .budget-progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(102,126,234,0.3);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+
+            .players-grid,
+            .matches-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .side-menu {
+                width: 280px;
+                right: -280px;
+            }
+        }
+
+        /* Image Preview */
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-top: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        /* Transfer List */
+        .transfer-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transfer-info {
+            flex: 1;
+        }
+
+        .transfer-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-left: 15px;
+        }
+
+        /* Week Display */
+        .week-display {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Login Inputs */
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #00d2ff;
+            box-shadow: 0 0 0 3px rgba(0,210,255,0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,210,255,0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,210,255,0.4);
+        }
+
+        .password-hint {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 8px;
+            color: #856404;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auto-save-indicator" id="autoSaveIndicator">✓ ذخیره خودکار</div>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h2>🏆 سامانه مدیریت لیگ برتر</h2>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" onclick="switchLoginTab('admin')">ورود مدیر</button>
+                <button class="login-tab" onclick="switchLoginTab('user')">ورود کاربر</button>
+            </div>
+
+            <!-- Admin Login -->
+            <div class="login-content active" id="adminLogin">
+                <input type="password" class="login-input" id="adminPassword" placeholder="رمز عبور مدیر">
+                <button class="login-btn" onclick="loginAdmin()">ورود به پنل مدیریت</button>
+            </div>
+            
+            <!-- User Login -->
+            <div class="login-content" id="userLogin">
+                <input type="text" class="login-input" id="userName" placeholder="نام کاربری">
+                <input type="password" class="login-input" id="userPassword" placeholder="رمز عبور">
+                <button class="login-btn" onclick="loginUser()">ورود کاربر</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="container" id="mainApp" style="display: none;">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚽ مدیریت لیگ برتر ایران</h1>
+            <div class="header-actions">
+                <div class="user-badge" id="userBadge">مدیر</div>
+                <button class="menu-btn" onclick="toggleMenu()">☰</button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">📊 داشبورد</button>
+            <button class="nav-tab" onclick="switchTab('teams')">🏟️ تیم‌ها</button>
+            <button class="nav-tab" onclick="switchTab('players')">👤 بازیکنان</button>
+            <button class="nav-tab" onclick="switchTab('matches')">⚽ مسابقات</button>
+            <button class="nav-tab" onclick="switchTab('standings')">🏆 جدول</button>
+            <button class="nav-tab" onclick="switchTab('transfers')">💰 نقل و انتقالات</button>
+            <button class="nav-tab" onclick="switchTab('budget')">💵 بودجه</button>
+            <button class="nav-tab" onclick="switchTab('ai')">🤖 دستیار هوشمند</button>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="content-section active" id="dashboard">
+            <div class="section-header">
+                <h2>📊 داشبورد مدیریتی</h2>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>تعداد تیم‌ها</h3>
+                    <div class="stat-value" id="totalTeams">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>تعداد بازیکنان</h3>
+                    <div class="stat-value" id="totalPlayers">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>مسابقات برگزار شده</h3>
+                    <div class="stat-value" id="totalMatches">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>انتقالات</h3>
+                    <div class="stat-value" id="totalTransfers">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>آخرین فعالیت‌ها</h3>
+                <div id="recentActivity"></div>
+            </div>
+        </div>
+
+        <!-- Teams Section -->
+        <div class="content-section" id="teams">
+            <div class="section-header">
+                <h2>🏟️ مدیریت تیم‌ها</h2>
+            </div>
+
+            <div class="card">
+                <h3>افزودن تیم جدید</h3>
+                <div class="form-group">
+                    <label>نام تیم:</label>
+                    <input type="text" id="teamName" placeholder="مثال: پرسپولیس">
+                </div>
+                <button class="btn btn-primary" onclick="addTeam()">➕ افزودن تیم</button>
+            </div>
+
+            <div class="card">
+                <h3>لیست تیم‌ها</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ردیف</th>
+                                <th>نام تیم</th>
+                                <th>تعداد بازیکن</th>
+                                <th>بودجه (میلیون یورو)</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Players Section -->
+        <div class="content-section" id="players">
+            <div class="section-header">
+                <h2>👤 مدیریت بازیکنان</h2>
+            </div>
+
+            <div class="card">
+                <h3>افزودن بازیکن جدید</h3>
+                <div class="form-group">
+                    <label>تیم:</label>
+                    <select id="playerTeam"></select>
+                </div>
+                <div class="form-group">
+                    <label>نام بازیکن:</label>
+                    <input type="text" id="playerName" placeholder="مثال: علی کریمی">
+                </div>
+                <div class="form-group">
+                    <label>پست:</label>
+                    <select id="playerPosition">
+                        <option value="GK">دروازه‌بان</option>
+                        <option value="DEF">مدافع</option>
+                        <option value="MID">هافبک</option>
+                        <option value="FWD">مهاجم</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>اورال (60-99):</label>
+                    <input type="number" id="playerOverall" min="60" max="99" placeholder="85">
+                </div>
+                <div class="form-group">
+                    <label>ارزش (میلیون یورو):</label>
+                    <input type="number" id="playerValue" placeholder="10">
+                </div>
+                <div class="form-group">
+                    <label>تصویر بازیکن:</label>
+                    <input type="file" id="playerImage" accept="image/*" onchange="previewPlayerImage()">
+                    <img id="playerImagePreview" class="image-preview" style="display: none;">
+                </div>
+                <button class="btn btn-primary" onclick="addPlayer()">➕ افزودن بازیکن</button>
+            </div>
+
+            <div class="card">
+                <h3>فیلتر بازیکنان</h3>
+                <div class="form-group">
+                    <label>انتخاب تیم:</label>
+                    <select id="filterTeam" onchange="filterPlayers()">
+                        <option value="">همه تیم‌ها</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="players-grid" id="playersGrid"></div>
+        </div>
+
+        <!-- Matches Section -->
+        <div class="content-section" id="matches">
+            <div class="section-header">
+                <h2>⚽ مدیریت مسابقات</h2>
+            </div>
+
+            <div class="card">
+                <h3>ایجاد مسابقه جدید</h3>
+                <div class="form-group">
+                    <label>هفته:</label>
+                    <input type="number" id="matchWeek" min="1" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label>تیم میزبان:</label>
+                    <select id="homeTeam"></select>
+                </div>
+                <div class="form-group">
+                    <label>تیم میهمان:</label>
+                    <select id="awayTeam"></select>
+                </div>
+                <div class="form-group">
+                    <label>گل میزبان:</label>
+                    <input type="number" id="homeScore" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>گل میهمان:</label>
+                    <input type="number" id="awayScore" min="0" value="0">
+                </div>
+                <button class="btn btn-primary" onclick="addMatch()">➕ ثبت مسابقه</button>
+            </div>
+
+            <div class="card">
+                <h3>فیلتر بر اساس هفته</h3>
+                <div class="form-group">
+                    <label>انتخاب هفته:</label>
+                    <select id="weekFilter" onchange="filterMatches()">
+                        <option value="">همه هفته‌ها</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="matches-grid" id="matchesGrid"></div>
+        </div>
+
+        <!-- Standings Section -->
+        <div class="content-section" id="standings">
+            <div class="section-header">
+                <h2>🏆 جدول رده‌بندی</h2>
+            </div>
+
+            <div class="card">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>رتبه</th>
+                                <th>تیم</th>
+                                <th>بازی</th>
+                                <th>برد</th>
+                                <th>مساوی</th>
+                                <th>باخت</th>
+                                <th>گل زده</th>
+                                <th>گل خورده</th>
+                                <th>تفاضل</th>
+                                <th>امتیاز</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standingsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transfers Section -->
+        <div class="content-section" id="transfers">
+            <div class="section-header">
+                <h2>💰 نقل و انتقالات</h2>
+            </div>
+
+            <div class="card">
+                <h3>ثبت نقل و انتقال</h3>
+                <div class="form-group">
+                    <label>بازیکن:</label>
+                    <select id="transferPlayer"></select>
+                </div>
+                <div class="form-group">
+                    <label>از تیم:</label>
+                    <select id="transferFrom"></select>
+                </div>
+                <div class="form-group">
+                    <label>به تیم:</label>
+                    <select id="transferTo"></select>
+                </div>
+                <div class="form-group">
+                    <label>مبلغ (میلیون یورو):</label>
+                    <input type="number" id="transferPrice" placeholder="10">
+                </div>
+                <div class="form-group">
+                    <label>تصویر انتقال:</label>
+                    <input type="file" id="transferImage" accept="image/*" onchange="previewTransferImage()">
+                    <img id="transferImagePreview" class="image-preview" style="display: none;">
+                </div>
+                <button class="btn btn-primary" onclick="addTransfer()">➕ ثبت انتقال</button>
+            </div>
+
+            <div class="card">
+                <h3>لیست انتقالات</h3>
+                <div id="transfersList"></div>
+            </div>
+        </div>
+
+        <!-- Budget Section -->
+        <div class="content-section" id="budget">
+            <div class="section-header">
+                <h2>💵 مدیریت بودجه</h2>
+            </div>
+
+            <div class="card">
+                <h3>تنظیم بودجه تیم</h3>
+                <div class="form-group">
+                    <label>تیم:</label>
+                    <select id="budgetTeam"></select>
+                </div>
+                <div class="form-group">
+                    <label>مبلغ (میلیون یورو):</label>
+                    <input type="number" id="budgetAmount" placeholder="100">
+                </div>
+                <button class="btn btn-success" onclick="setBudget()">💰 تنظیم بودجه</button>
+            </div>
+
+            <div class="card">
+                <h3>وضعیت بودجه تیم‌ها</h3>
+                <div id="budgetList"></div>
+            </div>
+        </div>
+
+        <!-- AI Assistant Section -->
+        <div class="content-section" id="ai">
+            <div class="section-header">
+                <h2>🤖 دستیار هوشمند</h2>
+            </div>
+
+            <div class="card">
+                <h3>چت با دستیار هوشمند</h3>
+                <div class="chat-container" id="aiChatContainer">
+                    <div class="chat-message ai">سلام! من دستیار هوشمند شما هستم. از من درباره تیم‌ها، بازیکنان، جدول، نقل و انتقالات و پیش‌بینی‌ها بپرسید!</div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="aiPrompt" placeholder="سوال خود را بنویسید..." onkeypress="if(event.key==='Enter') askAI()">
+                    <button class="btn btn-primary" onclick="askAI()">ارسال</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>💡 سوالات پیشنهادی</h3>
+                <div style="display: grid; gap: 10px; margin-top: 15px;">
+                    <button class="btn btn-warning" onclick="document.getElementById('aiPrompt').value='کدوم پست بازیکن نیاز دارم؟'; askAI();">کدوم پست بازیکن نیاز دارم؟</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('aiPrompt').value='بهترین تیم از نظر دفاع'; askAI();">بهترین تیم از نظر دفاع</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('aiPrompt').value='بهترین تیم از لحاظ حمله'; askAI();">بهترین تیم از لحاظ حمله</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('aiPrompt').value='کدوم تیم صدرنشینه؟'; askAI();">کدوم تیم صدرنشینه؟</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('aiPrompt').value='گرانترین خرید کیه؟'; askAI();">گرانترین خرید کیه؟</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('aiPrompt').value='آمار کلی لیگ رو بده'; askAI();">آمار کلی لیگ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <h3>منوی کاربری</h3>
+            <button class="close-btn" onclick="toggleMenu()">×</button>
+        </div>
+        <div class="menu-item" onclick="exportData(); closeMenu();">
+            <span class="menu-item-icon">💾</span>
+            <span>خروجی گرفتن از اطلاعات</span>
+        </div>
+        <div class="menu-item" onclick="document.getElementById('importFile').click(); closeMenu();">
+            <span class="menu-item-icon">📥</span>
+            <span>وارد کردن اطلاعات</span>
+        </div>
+        <div class="menu-item" onclick="resetData(); closeMenu();">
+            <span class="menu-item-icon">🗑️</span>
+            <span>پاک کردن همه اطلاعات</span>
+        </div>
+        <div class="menu-item" onclick="logout(); closeMenu();">
+            <span class="menu-item-icon">🚪</span>
+            <span>خروج از حساب کاربری</span>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
+
+    <script>
+        // Global Variables
+        let teams = [];
+        let players = {};
+        let matches = [];
+        let transfers = [];
+        let budgets = {};
+        let currentUser = null;
+        let userRole = null;
+
+        // Login Functions
+        function switchLoginTab(tab) {
+            document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.login-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'admin') {
+                document.querySelectorAll('.login-tab')[0].classList.add('active');
+                document.getElementById('adminLogin').classList.add('active');
+            } else {
+                document.querySelectorAll('.login-tab')[1].classList.add('active');
+                document.getElementById('userLogin').classList.add('active');
+            }
+        }
+
+        function loginAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === 'admin123') {
+                currentUser = 'Admin';
+                userRole = 'admin';
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('userBadge').textContent = '👑 مدیر';
+                loadDashboard();
+            } else {
+                alert('رمز عبور اشتباه است!');
+            }
+        }
+
+        function loginUser() {
+            const username = document.getElementById('userName').value;
+            const password = document.getElementById('userPassword').value;
+            
+            if (username && password) {
+                currentUser = username;
+                userRole = 'user';
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('userBadge').textContent = '👤 ' + username;
+                loadDashboard();
+            } else {
+                alert('لطفا نام کاربری و رمز عبور را وارد کنید');
+            }
+        }
+
+        function logout() {
+            if (confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) {
+                currentUser = null;
+                userRole = null;
+                document.getElementById('mainApp').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('userName').value = '';
+                document.getElementById('userPassword').value = '';
+            }
+        }
+
+        // Menu Functions
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('overlay');
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        // Tab Navigation
+        function switchTab(tabName) {
+            // Remove active from all tabs and sections
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            
+            // Add active to selected tab
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            // Load data for specific sections
+            if (tabName === 'teams') {
+                renderTeams();
+            } else if (tabName === 'players') {
+                loadPlayersAdmin();
+                loadFilterTeam();
+            } else if (tabName === 'matches') {
+                loadMatchSelectors();
+                renderMatches();
+                loadWeekFilter();
+            } else if (tabName === 'standings') {
+                renderStandings();
+            } else if (tabName === 'transfers') {
+                loadTransfersAdmin();
+                renderTransfersList();
+            } else if (tabName === 'budget') {
+                loadBudgetManagement();
+            }
+        }
+
+        // Data Management
+        function saveData() {
+            const data = {
+                teams,
+                players,
+                matches,
+                transfers,
+                budgets
+            };
+            localStorage.setItem('leagueData', JSON.stringify(data));
+            showAutoSave();
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('leagueData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                teams = data.teams || [];
+                players = data.players || {};
+                matches = data.matches || [];
+                transfers = data.transfers || [];
+                budgets = data.budgets || {};
+            }
+        }
+
+        function showAutoSave() {
+            const indicator = document.getElementById('autoSaveIndicator');
+            indicator.style.display = 'block';
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 2000);
+        }
+
+        function exportData() {
+            const data = {
+                teams,
+                players,
+                matches,
+                transfers,
+                budgets
+            };
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'league-data.json';
+            a.click();
+            alert('اطلاعات با موفقیت صادر شد');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    teams = data.teams || [];
+                    players = data.players || {};
+                    matches = data.matches || [];
+                    transfers = data.transfers || [];
+                    budgets = data.budgets || {};
+                    saveData();
+                    loadDashboard();
+                    alert('اطلاعات با موفقیت وارد شد');
+                } catch (error) {
+                    alert('خطا در خواندن فایل!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetData() {
+            if (confirm('آیا مطمئن هستید که می‌خواهید همه اطلاعات پاک شود؟')) {
+                teams = [];
+                players = {};
+                matches = [];
+                transfers = [];
+                budgets = {};
+                localStorage.removeItem('leagueData');
+                loadDashboard();
+                alert('همه اطلاعات پاک شد');
+            }
+        }
+
+        // Dashboard
+        function loadDashboard() {
+            document.getElementById('totalTeams').textContent = teams.length;
+            
+            let totalPlayers = 0;
+            Object.values(players).forEach(teamPlayers => {
+                totalPlayers += teamPlayers.length;
+            });
+            document.getElementById('totalPlayers').textContent = totalPlayers;
+            
+            document.getElementById('totalMatches').textContent = matches.length;
+            document.getElementById('totalTransfers').textContent = transfers.length;
+
+            // Recent Activity
+            const activityDiv = document.getElementById('recentActivity');
+            let activity = '<ul style="list-style: none; padding: 0;">';
+            
+            if (matches.length > 0) {
+                const lastMatch = matches[matches.length - 1];
+                activity += `<li style="padding: 10px; border-bottom: 1px solid #e9ecef;">⚽ آخرین بازی: ${lastMatch.homeTeam} ${lastMatch.homeScore} - ${lastMatch.awayScore} ${lastMatch.awayTeam}</li>`;
+            }
+            
+            if (transfers.length > 0) {
+                const lastTransfer = transfers[transfers.length - 1];
+                activity += `<li style="padding: 10px; border-bottom: 1px solid #e9ecef;">💰 آخرین انتقال: ${lastTransfer.player} از ${lastTransfer.from} به ${lastTransfer.to}</li>`;
+            }
+            
+            if (teams.length > 0) {
+                activity += `<li style="padding: 10px;">🏟️ تعداد تیم‌های فعال: ${teams.length}</li>`;
+            }
+            
+            activity += '</ul>';
+            activityDiv.innerHTML = activity;
+        }
+
+        // Teams Management
+        function addTeam() {
+            const teamName = document.getElementById('teamName').value.trim();
+            
+            if (!teamName) {
+                alert('لطفا نام تیم را وارد کنید');
+                return;
+            }
+
+            if (teams.includes(teamName)) {
+                alert('این تیم قبلا اضافه شده است');
+                return;
+            }
+
+            teams.push(teamName);
+            players[teamName] = [];
+            budgets[teamName] = 100;
+            
+            saveData();
+            renderTeams();
+            document.getElementById('teamName').value = '';
+            alert('تیم با موفقیت اضافه شد');
+        }
+
+        function renderTeams() {
+            const tbody = document.getElementById('teamsTable');
+            tbody.innerHTML = '';
+
+            teams.forEach((team, index) => {
+                const playerCount = players[team] ? players[team].length : 0;
+                const budget = budgets[team] || 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><strong>${team}</strong></td>
+                    <td>${playerCount}</td>
+                    <td>${budget}M €</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteTeam('${team}')">🗑️ حذف</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function deleteTeam(teamName) {
+            if (!confirm(`آیا مطمئن هستید که می‌خواهید تیم ${teamName} را حذف کنید؟`)) return;
+            
+            teams = teams.filter(t => t !== teamName);
+            delete players[teamName];
+            delete budgets[teamName];
+            matches = matches.filter(m => m.homeTeam !== teamName && m.awayTeam !== teamName);
+            
+            saveData();
+            renderTeams();
+            alert('تیم حذف شد');
+        }
+
+        // Players Management
+        function loadPlayersAdmin() {
+            const select = document.getElementById('playerTeam');
+            select.innerHTML = '<option value="">انتخاب تیم</option>';
+            teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team;
+                option.textContent = team;
+                select.appendChild(option);
+            });
+        }
+
+        function loadFilterTeam() {
+            const select = document.getElementById('filterTeam');
+            select.innerHTML = '<option value="">همه تیم‌ها</option>';
+            teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team;
+                option.textContent = team;
+                select.appendChild(option);
+            });
+        }
+
+        function previewPlayerImage() {
+            const input = document.getElementById('playerImage');
+            const preview = document.getElementById('playerImagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addPlayer() {
+            const team = document.getElementById('playerTeam').value;
+            const name = document.getElementById('playerName').value.trim();
+            const position = document.getElementById('playerPosition').value;
+            const overall = parseInt(document.getElementById('playerOverall').value);
+            const value = parseFloat(document.getElementById('playerValue').value);
+            const imageFile = document.getElementById('playerImage').files[0];
+
+            if (!team || !name || !overall || !value) {
+                alert('لطفا تمام فیلدها را پر کنید');
+                return;
+            }
+
+            if (overall < 60 || overall > 99) {
+                alert('اورال باید بین 60 تا 99 باشد');
+                return;
+            }
+
+            const player = {
+                name,
+                position,
+                overall,
+                value,
+                image: null
+            };
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    player.image = e.target.result;
+                    if (!players[team]) players[team] = [];
+                    players[team].push(player);
+                    saveData();
+                    loadPlayersAdmin();
+                    filterPlayers();
+                    resetPlayerForm();
+                    alert('بازیکن با موفقیت اضافه شد');
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                if (!players[team]) players[team] = [];
+                players[team].push(player);
+                saveData();
+                loadPlayersAdmin();
+                filterPlayers();
+                resetPlayerForm();
+                alert('بازیکن با موفقیت اضافه شد');
+            }
+        }
+
+        function resetPlayerForm() {
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerOverall').value = '';
+            document.getElementById('playerValue').value = '';
+            document.getElementById('playerImage').value = '';
+            document.getElementById('playerImagePreview').style.display = 'none';
+        }
+
+        function filterPlayers() {
+            const filterTeam = document.getElementById('filterTeam').value;
+            const grid = document.getElementById('playersGrid');
+            grid.innerHTML = '';
+
+            const teamsToShow = filterTeam ? [filterTeam] : teams;
+
+            teamsToShow.forEach(team => {
+                if (players[team] && players[team].length > 0) {
+                    players[team].forEach((player, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'player-card';
+                        card.innerHTML = `
+                            ${player.image ? `<img src="${player.image}" alt="${player.name}">` : '<img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'%3E%3Crect fill=\'%2300d2ff\' width=\'100\' height=\'100\'/%3E%3Ctext fill=\'white\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' font-size=\'40\'%3E${player.name.charAt(0)}%3C/text%3E%3C/svg%3E" alt="${player.name}">'}
+                            <h4>${player.name}</h4>
+                            <span class="position">${getPositionName(player.position)}</span>
+                            <div class="overall">${player.overall}</div>
+                            <div class="value">${player.value}M €</div>
+                            <div style="margin-top: 10px; color: #6c757d;">تیم: ${team}</div>
+                            <button class="btn btn-danger" style="margin-top: 10px;" onclick="deletePlayer('${team}', ${index})">🗑️ حذف</button>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+            });
+
+            if (grid.children.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #6c757d; grid-column: 1/-1;">هیچ بازیکنی یافت نشد</p>';
+            }
+        }
+
+        function deletePlayer(team, index) {
+            if (!confirm('آیا مطمئن هستید؟')) return;
+            players[team].splice(index, 1);
+            saveData();
+            filterPlayers();
+            alert('بازیکن حذف شد');
+        }
+
+        // Matches Management
+        function loadMatchSelectors() {
+            const homeSelect = document.getElementById('homeTeam');
+            const awaySelect = document.getElementById('awayTeam');
+            
+            homeSelect.innerHTML = '<option value="">انتخاب تیم میزبان</option>';
+            awaySelect.innerHTML = '<option value="">انتخاب تیم میهمان</option>';
+            
+            teams.forEach(team => {
+                const option1 = document.createElement('option');
+                option1.value = team;
+                option1.textContent = team;
+                homeSelect.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = team;
+                option2.textContent = team;
+                awaySelect.appendChild(option2);
+            });
+        }
+
+        function addMatch() {
+            const week = parseInt(document.getElementById('matchWeek').value);
+            const homeTeam = document.getElementById('homeTeam').value;
+            const awayTeam = document.getElementById('awayTeam').value;
+            const homeScore = parseInt(document.getElementById('homeScore').value);
+            const awayScore = parseInt(document.getElementById('awayScore').value);
+
+            if (!week || !homeTeam || !awayTeam) {
+                alert('لطفا تمام فیلدها را پر کنید');
+                return;
+            }
+
+            if (homeTeam === awayTeam) {
+                alert('تیم میزبان و میهمان نمی‌توانند یکسان باشند');
+                return;
+            }
+
+            matches.push({
+                week,
+                homeTeam,
+                awayTeam,
+                homeScore,
+                awayScore
+            });
+
+            saveData();
+            renderMatches();
+            loadWeekFilter();
+            alert('مسابقه با موفقیت ثبت شد');
+            
+            document.getElementById('matchWeek').value = '';
+            document.getElementById('homeScore').value = '0';
+            document.getElementById('awayScore').value = '0';
+        }
+
+        function loadWeekFilter() {
+            const select = document.getElementById('weekFilter');
+            const weeks = [...new Set(matches.map(m => m.week))].sort((a, b) => a - b);
+            
+            select.innerHTML = '<option value="">همه هفته‌ها</option>';
+            weeks.forEach(week => {
+                const option = document.createElement('option');
+                option.value = week;
+                option.textContent = `هفته ${week}`;
+                select.appendChild(option);
+            });
+        }
+
+        function filterMatches() {
+            const weekFilter = document.getElementById('weekFilter').value;
+            renderMatches(weekFilter);
+        }
+
+        function renderMatches(weekFilter = '') {
+            const grid = document.getElementById('matchesGrid');
+            grid.innerHTML = '';
+
+            const filteredMatches = weekFilter 
+                ? matches.filter(m => m.week == weekFilter)
+                : matches;
+
+            if (filteredMatches.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #6c757d; grid-column: 1/-1;">هیچ مسابقه‌ای یافت نشد</p>';
+                return;
+            }
+
+            filteredMatches.forEach((match, index) => {
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.innerHTML = `
+                    <div class="match-header">هفته ${match.week}</div>
+                    <div class="match-teams">
+                        <div class="match-team">
+                            <h4>${match.homeTeam}</h4>
+                        </div>
+                        <div class="match-score">${match.homeScore} - ${match.awayScore}</div>
+                        <div class="match-team">
+                            <h4>${match.awayTeam}</h4>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteMatch(${matches.indexOf(match)})">🗑️ حذف</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function deleteMatch(index) {
+            if (!confirm('آیا مطمئن هستید؟')) return;
+            matches.splice(index, 1);
+            saveData();
+            renderMatches();
+            loadWeekFilter();
+            alert('مسابقه حذف شد');
+        }
+
+        // Standings
+        function renderStandings() {
+            const tbody = document.getElementById('standingsTable');
+            const standings = calculateStandings();
+            
+            tbody.innerHTML = '';
+
+            standings.forEach((team, index) => {
+                const row = document.createElement('tr');
+                const goalDiff = team.goalsFor - team.goalsAgainst;
+                
+                row.innerHTML = `
+                    <td><strong>${index + 1}</strong></td>
+                    <td><strong>${team.team}</strong></td>
+                    <td>${team.played}</td>
+                    <td>${team.won}</td>
+                    <td>${team.drawn}</td>
+                    <td>${team.lost}</td>
+                    <td>${team.goalsFor}</td>
+                    <td>${team.goalsAgainst}</td>
+                    <td>${goalDiff > 0 ? '+' : ''}${goalDiff}</td>
+                    <td><strong>${team.points}</strong></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Transfers Management
+        function loadTransfersAdmin() {
+            const playerSelect = document.getElementById('transferPlayer');
+            const fromSelect = document.getElementById('transferFrom');
+            const toSelect = document.getElementById('transferTo');
+
+            playerSelect.innerHTML = '<option value="">انتخاب بازیکن</option>';
+            fromSelect.innerHTML = '<option value="">از تیم</option>';
+            toSelect.innerHTML = '<option value="">به تیم</option>';
+
+            Object.entries(players).forEach(([team, teamPlayers]) => {
+                teamPlayers.forEach(player => {
+                    const option = document.createElement('option');
+                    option.value = `${team}|||${player.name}`;
+                    option.textContent = `${player.name} (${team})`;
+                    playerSelect.appendChild(option);
+                });
+            });
+
+            teams.forEach(team => {
+                const option1 = document.createElement('option');
+                option1.value = team;
+                option1.textContent = team;
+                fromSelect.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = team;
+                option2.textContent = team;
+                toSelect.appendChild(option2);
+            });
+        }
+
+        function loadTeamSelectors() {
+            loadTransfersAdmin();
+            loadMatchSelectors();
+            loadPlayersAdmin();
+            loadFilterTeam();
+            loadBudgetManagement();
+        }
+
+        function renderTransfersList() {
+            const container = document.getElementById('transfersList');
+            container.innerHTML = '';
+
+            if (transfers.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d;">هیچ انتقالی ثبت نشده است</p>';
+                return;
+            }
+
+            transfers.forEach((transfer, index) => {
+                const item = document.createElement('div');
+                item.className = 'transfer-item';
+                item.innerHTML = `
+                    ${transfer.image ? `<img src="${transfer.image}" alt="${transfer.player}">` : ''}
+                    <div class="transfer-info">
+                        <strong>${transfer.player}</strong>
+                        <div style="color: #6c757d; margin-top: 5px;">
+                            ${transfer.from} ➔ ${transfer.to}
+                        </div>
+                        <div style="color: #28a745; font-weight: bold; margin-top: 5px;">
+                            ${transfer.price}M €
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteTransfer(${index})">🗑️ حذف</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function previewTransferImage() {
+            const input = document.getElementById('transferImage');
+            const preview = document.getElementById('transferImagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addTransfer() {
+            const playerInfo = document.getElementById('transferPlayer').value;
+            const from = document.getElementById('transferFrom').value;
+            const to = document.getElementById('transferTo').value;
+            const price = parseFloat(document.getElementById('transferPrice').value);
+            const imageFile = document.getElementById('transferImage').files[0];
+
+            if (!playerInfo || !from || !to || !price) {
+                alert('لطفا تمام فیلدها را پر کنید');
+                return;
+            }
+
+            if (from === to) {
+                alert('تیم مبدا و مقصد نمی‌توانند یکسان باشند');
+                return;
+            }
+
+            const [oldTeam, playerName] = playerInfo.split('|||');
+            
+            const playerIndex = players[oldTeam].findIndex(p => p.name === playerName);
+            if (playerIndex === -1) {
+                alert('بازیکن یافت نشد');
+                return;
+            }
+
+            const player = players[oldTeam][playerIndex];
+
+            if ((budgets[to] || 0) < price) {
+                alert('بودجه تیم مقصد کافی نیست');
+                return;
+            }
+
+            players[oldTeam].splice(playerIndex, 1);
+            if (!players[to]) players[to] = [];
+            players[to].push(player);
+
+            budgets[from] = (budgets[from] || 0) + price;
+            budgets[to] = (budgets[to] || 0) - price;
+
+            const transfer = {
+                player: playerName,
+                from,
+                to,
+                price,
+                image: null
+            };
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    transfer.image = e.target.result;
+                    transfers.push(transfer);
+                    saveData();
+                    loadTransfersAdmin();
+                    renderTransfersList();
+                    loadTeamSelectors();
+                    loadPlayersAdmin();
+                    renderTeams();
+                    renderBudgetList();
+                    filterPlayers();
+                    loadBudgetManagement();
+                    alert('انتقال با موفقیت ثبت شد');
+                    resetTransferForm();
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                transfers.push(transfer);
+                saveData();
+                loadTransfersAdmin();
+                renderTransfersList();
+                loadTeamSelectors();
+                loadPlayersAdmin();
+                renderTeams();
+                renderBudgetList();
+                filterPlayers();
+                loadBudgetManagement();
+                alert('انتقال با موفقیت ثبت شد');
+                resetTransferForm();
+            }
+        }
+
+        function resetTransferForm() {
+            document.getElementById('transferPrice').value = '';
+            document.getElementById('transferImage').value = '';
+            document.getElementById('transferImagePreview').style.display = 'none';
+        }
+
+        function deleteTransfer(index) {
+            if (!confirm('آیا مطمئن هستید؟')) return;
+            transfers.splice(index, 1);
+            saveData();
+            loadTransfersAdmin();
+            renderTransfersList();
+            alert('انتقال حذف شد');
+        }
+
+        // Budget Management
+        function loadBudgetManagement() {
+            const select = document.getElementById('budgetTeam');
+            select.innerHTML = '<option value="">انتخاب تیم</option>';
+            
+            teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team;
+                option.textContent = team;
+                select.appendChild(option);
+            });
+
+            renderBudgetList();
+        }
+
+        function setBudget() {
+            const team = document.getElementById('budgetTeam').value;
+            const amount = parseFloat(document.getElementById('budgetAmount').value);
+
+            if (!team || !amount) {
+                alert('لطفا تیم و مبلغ را وارد کنید');
+                return;
+            }
+
+            budgets[team] = amount;
+            saveData();
+            renderBudgetList();
+            document.getElementById('budgetAmount').value = '';
+            alert('بودجه با موفقیت تنظیم شد');
+        }
+
+        function renderBudgetList() {
+            const container = document.getElementById('budgetList');
+            container.innerHTML = '';
+
+            teams.forEach(team => {
+                const budget = budgets[team] || 0;
+                const spent = calculateSpentBudget(team);
+                const remaining = budget - spent;
+                const percentage = budget > 0 ? ((budget - remaining) / budget * 100) : 0;
+
+                const item = document.createElement('div');
+                item.style.marginBottom = '20px';
+                item.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <strong>${team}</strong>
+                        <span>${remaining.toFixed(1)}M € / ${budget}M €</span>
+                    </div>
+                    <div class="budget-progress">
+                        <div class="budget-progress-bar" style="width: ${percentage}%">
+                            ${percentage.toFixed(0)}%
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function calculateSpentBudget(team) {
+            let spent = 0;
+            transfers.forEach(t => {
+                if (t.to === team) spent += t.price;
+                if (t.from === team) spent -= t.price;
+            });
+            return spent;
+        }
+
+        // AI Assistant
+        let aiConversation = [];
+
+        function askAI() {
+            const prompt = document.getElementById('aiPrompt').value.trim();
+            if (!prompt) {
+                alert('لطفا سوال خود را بنویسید');
+                return;
+            }
+
+            addChatMessage('user', prompt);
+            document.getElementById('aiPrompt').value = '';
+
+            setTimeout(() => {
+                const response = generateAIResponse(prompt);
+                addChatMessage('ai', response);
+            }, 500);
+        }
+
+        function addChatMessage(type, text) {
+            const container = document.getElementById('aiChatContainer');
+            const message = document.createElement('div');
+            message.className = `chat-message ${type}`;
+            message.textContent = text;
+            container.appendChild(message);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function generateAIResponse(prompt) {
+            const lowerPrompt = prompt.toLowerCase();
+            
+            // تحلیل نیاز به پست بازیکن
+            if (lowerPrompt.includes('پست') && (lowerPrompt.includes('نیاز') || lowerPrompt.includes('کم') || lowerPrompt.includes('کدوم') || lowerPrompt.includes('چه'))) {
+                const positionNeeds = analyzePositionNeeds();
+                if (positionNeeds.length > 0) {
+                    return `تیم‌هایی که به بازیکن نیاز دارند:\n\n${positionNeeds.join('\n')}`;
+                }
+                return 'همه تیم‌ها در تمام پست‌ها بازیکن کافی دارند.';
+            }
+
+            // تحلیل جدول
+            if (lowerPrompt.includes('صدرنشین') || lowerPrompt.includes('اول جدول') || lowerPrompt.includes('رتبه اول')) {
+                const standings = calculateStandings();
+                if (standings.length > 0) {
+                    return `تیم ${standings[0].team} با ${standings[0].points} امتیاز در صدر جدول قرار دارد.`;
+                }
+            }
+
+            if (lowerPrompt.includes('آخر جدول') || lowerPrompt.includes('رتبه آخر')) {
+                const standings = calculateStandings();
+                if (standings.length > 0) {
+                    const last = standings[standings.length - 1];
+                    return `تیم ${last.team} با ${last.points} امتیاز در انتهای جدول است.`;
+                }
+            }
+
+            // تحلیل حمله
+            if (lowerPrompt.includes('بهترین حمله') || lowerPrompt.includes('گل زده') || lowerPrompt.includes('حمله')) {
+                const standings = calculateStandings();
+                const sorted = standings.sort((a, b) => b.goalsFor - a.goalsFor);
+                if (sorted.length > 0) {
+                    return `🔥 بهترین خط حمله:\n\n1️⃣ ${sorted[0].team} با ${sorted[0].goalsFor} گل زده\n2️⃣ ${sorted[1]?.team} با ${sorted[1]?.goalsFor} گل\n3️⃣ ${sorted[2]?.team} با ${sorted[2]?.goalsFor} گل`;
+                }
+            }
+
+            // تحلیل دفاع
+            if (lowerPrompt.includes('بهترین دفاع') || lowerPrompt.includes('کمترین گل خورده') || lowerPrompt.includes('دفاع')) {
+                const standings = calculateStandings();
+                const sorted = standings.sort((a, b) => a.goalsAgainst - b.goalsAgainst);
+                if (sorted.length > 0) {
+                    return `🛡️ بهترین خط دفاع:\n\n1️⃣ ${sorted[0].team} با ${sorted[0].goalsAgainst} گل خورده\n2️⃣ ${sorted[1]?.team} با ${sorted[1]?.goalsAgainst} گل خورده\n3️⃣ ${sorted[2]?.team} با ${sorted[2]?.goalsAgainst} گل خورده`;
+                }
+            }
+
+            // تحلیل بودجه
+            if (lowerPrompt.includes('بودجه') || lowerPrompt.includes('پولدارترین')) {
+                const sorted = Object.entries(budgets).sort((a, b) => b[1] - a[1]);
+                if (sorted.length > 0) {
+                    return `تیم ${sorted[0][0]} با ${sorted[0][1]} میلیون یورو بیشترین بودجه را دارد. ${sorted[1]?.[0]} (${sorted[1]?.[1]}M) و ${sorted[2]?.[0]} (${sorted[2]?.[1]}M) در رتبه‌های بعدی قرار دارند.`;
+                }
+            }
+
+            // تحلیل بازیکنان
+            if (lowerPrompt.includes('بهترین بازیکن') || lowerPrompt.includes('بالاترین اورال')) {
+                let bestPlayer = null;
+                let bestOverall = 0;
+                Object.entries(players).forEach(([team, teamPlayers]) => {
+                    teamPlayers.forEach(player => {
+                        if (player.overall > bestOverall) {
+                            bestOverall = player.overall;
+                            bestPlayer = {...player, team};
+                        }
+                    });
+                });
+                if (bestPlayer) {
+                    return `${bestPlayer.name} از تیم ${bestPlayer.team} با اورال ${bestPlayer.overall} بهترین بازیکن است.`;
+                }
+            }
+
+            // تحلیل نقل و انتقالات
+            if (lowerPrompt.includes('گرانترین خرید') || lowerPrompt.includes('بیشترین انتقال')) {
+                const sorted = [...transfers].sort((a, b) => b.price - a.price);
+                if (sorted.length > 0) {
+                    return `گرانترین انتقال مربوط به ${sorted[0].player} از ${sorted[0].from} به ${sorted[0].to} به مبلغ ${sorted[0].price} میلیون یورو است.`;
+                }
+            }
+
+            // پیش‌بینی قهرمانی
+            if (lowerPrompt.includes('قهرمان') || lowerPrompt.includes('پیش‌بینی')) {
+                const standings = calculateStandings();
+                if (standings.length > 0) {
+                    const top = standings[0];
+                    const teamStrength = calculateTeamStrength(top.team);
+                    return `با توجه به ${top.points} امتیاز فعلی و میانگین قدرت ${teamStrength}، تیم ${top.team} شانس بالایی برای قهرمانی دارد. البته رقابت هنوز ادامه دارد!`;
+                }
+            }
+
+            // آمار کلی
+            if (lowerPrompt.includes('آمار') || lowerPrompt.includes('خلاصه')) {
+                const totalMatches = matches.length;
+                const totalGoals = matches.reduce((sum, m) => sum + m.homeScore + m.awayScore, 0);
+                const avgGoals = totalMatches > 0 ? (totalGoals / totalMatches).toFixed(2) : 0;
+                return `تاکنون ${totalMatches} بازی با مجموع ${totalGoals} گل برگزار شده است. میانگین گل هر بازی ${avgGoals} است. در مجموع ${teams.length} تیم در لیگ حضور دارند.`;
+            }
+
+            return 'سوال جالبی بود! می‌توانید درباره جدول، بهترین حمله/دفاع، بودجه تیم‌ها، بهترین بازیکنان، نقل و انتقالات یا پیش‌بینی قهرمانی از من بپرسید.';
+        }
+
+        function analyzePositionNeeds() {
+            const needs = [];
+            const positionNames = {
+                'GK': 'دروازه‌بان',
+                'DEF': 'مدافع',
+                'MID': 'هافبک',
+                'FWD': 'مهاجم'
+            };
+
+            teams.forEach(team => {
+                const teamPlayers = players[team] || [];
+                const positions = {
+                    'GK': 0,
+                    'DEF': 0,
+                    'MID': 0,
+                    'FWD': 0
+                };
+
+                teamPlayers.forEach(player => {
+                    positions[player.position]++;
+                });
+
+                const neededPositions = [];
+                if (positions.GK < 2) neededPositions.push(positionNames.GK);
+                if (positions.DEF < 4) neededPositions.push(positionNames.DEF);
+                if (positions.MID < 4) neededPositions.push(positionNames.MID);
+                if (positions.FWD < 2) neededPositions.push(positionNames.FWD);
+
+                if (neededPositions.length > 0) {
+                    needs.push(`⚽ ${team}: نیاز به ${neededPositions.join('، ')}`);
+                }
+            });
+
+            return needs;
+        }
+
+        function calculateStandings() {
+            const standings = {};
+            
+            teams.forEach(team => {
+                standings[team] = {
+                    team,
+                    played: 0,
+                    won: 0,
+                    drawn: 0,
+                    lost: 0,
+                    goalsFor: 0,
+                    goalsAgainst: 0,
+                    points: 0
+                };
+            });
+
+            matches.forEach(match => {
+                const {homeTeam, awayTeam, homeScore, awayScore} = match;
+                
+                if (!standings[homeTeam] || !standings[awayTeam]) return;
+
+                standings[homeTeam].played++;
+                standings[awayTeam].played++;
+                standings[homeTeam].goalsFor += homeScore;
+                standings[homeTeam].goalsAgainst += awayScore;
+                standings[awayTeam].goalsFor += awayScore;
+                standings[awayTeam].goalsAgainst += homeScore;
+
+                if (homeScore > awayScore) {
+                    standings[homeTeam].won++;
+                    standings[homeTeam].points += 3;
+                    standings[awayTeam].lost++;
+                } else if (homeScore < awayScore) {
+                    standings[awayTeam].won++;
+                    standings[awayTeam].points += 3;
+                    standings[homeTeam].lost++;
+                } else {
+                    standings[homeTeam].drawn++;
+                    standings[awayTeam].drawn++;
+                    standings[homeTeam].points++;
+                    standings[awayTeam].points++;
+                }
+            });
+
+            return Object.values(standings).sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                const gdA = a.goalsFor - a.goalsAgainst;
+                const gdB = b.goalsFor - b.goalsAgainst;
+                if (gdB !== gdA) return gdB - gdA;
+                return b.goalsFor - a.goalsFor;
+            });
+        }
+
+        function calculateTeamStrength(teamName) {
+            const teamPlayers = players[teamName] || [];
+            if (teamPlayers.length === 0) return 0;
+            return Math.round(teamPlayers.reduce((sum, p) => sum + p.overall, 0) / teamPlayers.length);
+        }
+
+        // Helper Functions
+        function getPositionName(pos) {
+            const positions = {
+                'GK': 'دروازه‌بان',
+                'DEF': 'مدافع',
+                'MID': 'هافبک',
+                'FWD': 'مهاجم'
+            };
+            return positions[pos] || pos;
+        }
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
